@@ -1,0 +1,6 @@
+*.pdf
+Library/*
+Temp/*
+data.unity3d
+.vs/*
+exe/*
