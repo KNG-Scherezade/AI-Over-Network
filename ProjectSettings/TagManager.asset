@@ -17,6 +17,8 @@ TagManager:
   - PowerupLocation
   - Ghost
   - PlayerContainer
+  - UIPannel
+  - UIPanel
   layers:
   - Default
   - TransparentFX

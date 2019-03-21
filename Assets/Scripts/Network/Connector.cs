@@ -100,7 +100,6 @@ public class Connector : MonoBehaviourPunCallbacks
     {
         MapSetup.player_no = player_no;
         MapSetup.all_players = (int)all_players;
-        MapSetup.info_text.SetActive(false);
         MapSetup.player_text.GetComponent<Text>().text = "You are Player " + player_no;
         MapSetup.initialize();
     }

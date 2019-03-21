@@ -46,6 +46,9 @@ public class PathfindingRules : MonoBehaviour
         List<KeyValuePair<string, NodeBehaviour>> closed_nodes = new List<KeyValuePair<string, NodeBehaviour>>();
         List<KeyValuePair<string, NodeBehaviour>> path_nodes = new List<KeyValuePair<string, NodeBehaviour>>();
         NodeBehaviour current_node = start_node;
+        if (current_node == null)
+            return null;
+        current_node.cost_so_far[npc_no - 1] = 0;
         current_node.cost_so_far[npc_no - 1] = 0;
         int i = 0;
         while (++i < 100000)
@@ -115,6 +118,7 @@ public class PathfindingRules : MonoBehaviour
             if(current_node == ending_node)
             {
                 if (debug) current_node.gameObject.GetComponentInChildren<MeshRenderer>().material = DebugPath;
+                path_nodes.Add(target);
                 break;
             }
         }

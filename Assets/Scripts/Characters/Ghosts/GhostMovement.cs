@@ -5,8 +5,8 @@ using UnityEngine;
 public class GhostMovement : MonoBehaviour
 {
 
-    PathfindingRules pfr;
-    List<KeyValuePair<string, NodeBehaviour>> traversal_nodes = new List<KeyValuePair<string, NodeBehaviour>>();
+    public PathfindingRules pfr;
+    public List<KeyValuePair<string, NodeBehaviour>> traversal_nodes = new List<KeyValuePair<string, NodeBehaviour>>();
     float node_removal_dist = 0.6f;
 
     public float move_speed = 1.0f;
@@ -15,6 +15,9 @@ public class GhostMovement : MonoBehaviour
 
     public bool flee_state = false;
 
+    public float pathfinding_check_interval =1.0f;
+    float previous_pathfinding_check = 0.0f;
+
     public void respawn()
     {
         this.transform.position = GameObject.Find(this.name.Substring(0, 6) + "Spawn").transform.position;
@@ -22,9 +25,9 @@ public class GhostMovement : MonoBehaviour
         traversal_nodes = new List<KeyValuePair<string, NodeBehaviour>>();
     }
 
-    NodeBehaviour findClosestNode()
+    public NodeBehaviour findClosestNode()
     {
-        Collider[] cols = Physics.OverlapBox(this.transform.position, new Vector3(1.0f, 1.0f, 1.0f), Quaternion.identity, 1 << 11 | 1 << 10);
+        Collider[] cols = Physics.OverlapBox(this.transform.position, new Vector3(0.4f, 0.4f, 0.4f), Quaternion.identity, 1 << 11 | 1 << 10);
         float closests = 1000;
         NodeBehaviour standing_node = null;
         foreach (Collider col in cols)
@@ -38,7 +41,7 @@ public class GhostMovement : MonoBehaviour
         return standing_node;
     }
 
-    GameObject getClosestPlayer()
+    public GameObject getClosestPlayer()
     {
         GameObject[] players = GameObject.FindGameObjectsWithTag("PlayerContainer");
         float closest_distance = float.MaxValue;
@@ -56,7 +59,7 @@ public class GhostMovement : MonoBehaviour
         return closest_player;
     }
 
-    Vector3 getTraversalDir(string direction)
+    public Vector3 getTraversalDir(string direction)
     {
         if (direction == "Up")
         {
@@ -84,72 +87,67 @@ public class GhostMovement : MonoBehaviour
 
     void Update()
     {
-        if (Input.GetKeyDown("r"))
+        if (Connector.is_host == 1)
         {
-            respawn();
-        }
-        if (false)
-        {
-
-        }
-        else
-        {
-            if (traversal_nodes.Count > 1)
+            if (Input.GetKeyDown("r"))
             {
-                this.transform.position += move_speed * Time.deltaTime
-                    * getTraversalDir(traversal_nodes[traversal_nodes.Count - 1].Key);
+                respawn();
             }
-            else
+            else if (Input.GetKey("b"))
             {
-                if (getClosestPlayer() != null)
+                if (Input.GetKey("w"))
                 {
-                    this.transform.position += move_speed * Time.deltaTime
-                    * (getClosestPlayer().transform.position - this.transform.position).normalized;
+                    this.transform.position += move_speed * Vector3.forward * Time.deltaTime / 2;
                 }
-
-            }
-            if (traversal_nodes.Count > 1)
-            {
-                //head for next node taking into account what the first node says
-                if ((this.transform.position - traversal_nodes[traversal_nodes.Count - 2].Value.transform.position).magnitude
-                    < node_removal_dist)
+                else if (Input.GetKey("a"))
                 {
-
-                    GameObject closest_player = getClosestPlayer();
+                    this.transform.position += move_speed * Vector3.left * Time.deltaTime / 2;
+                }
+            }
+            else if (traversal_nodes == null || traversal_nodes.Count == 0)
+            {
+                GameObject closest_player = this.GetComponent<GhostMovement>().getClosestPlayer();
+                NodeBehaviour ghost_node = this.GetComponent<GhostMovement>().findClosestNode();
+                if (ghost_node != null)
+                {
+                    Debug.Log("!2");
+                    NodeBehaviour target_node = null;
+                    //closest player null when no players to target
                     if (closest_player == null)
                     {
-                        traversal_nodes.RemoveAt(traversal_nodes.Count - 1);
+                        target_node = GameObject.FindGameObjectWithTag("GhostPen").GetComponent<NodeBehaviour>();
                     }
                     else
                     {
-                        pfr.resetRouteNodes(npc_no);
-                        NodeBehaviour target_node = closest_player.GetComponent<PlayerMovement>().getTrackingNode();
-                        NodeBehaviour ghost_node = findClosestNode();
-                        if (target_node != ghost_node)
-                        {
-                            traversal_nodes = pfr.getRouteNodes(findClosestNode(), target_node, npc_no);
-                        }
+                        target_node = closest_player.GetComponent<PlayerMovement>().getTrackingNode();
+                    }
+                    if (target_node != null)
+                    {
+                        this.GetComponent<GhostMovement>().pfr.resetRouteNodes(this.GetComponent<GhostMovement>().npc_no);
+                        this.GetComponent<GhostMovement>().traversal_nodes = this.GetComponent<GhostMovement>().pfr.getRouteNodes(ghost_node, target_node, this.GetComponent<GhostMovement>().npc_no);
                     }
                 }
             }
             else
             {
-                GameObject closest_player = getClosestPlayer();
-                if (closest_player == null)
+                Debug.Log("A");
+                if (findClosestNode() == traversal_nodes[traversal_nodes.Count - 1].Value)
                 {
-                    pfr.resetRouteNodes(npc_no);
-                    GameObject[] go = GameObject.FindGameObjectsWithTag("WP");
-                    NodeBehaviour target_node = go[Random.Range(0, go.Length)].GetComponent<NodeBehaviour>();
-                    traversal_nodes = pfr.getRouteNodes(findClosestNode(), target_node, npc_no);
+                    traversal_nodes.RemoveAt(traversal_nodes.Count - 1);
                 }
-                else
+                if (traversal_nodes.Count > 0)
                 {
-                    NodeBehaviour target_node = closest_player.GetComponent<PlayerMovement>().getTrackingNode();
-                    NodeBehaviour ghost_node = findClosestNode();
-                    if (target_node != ghost_node)
+                    if ((traversal_nodes[traversal_nodes.Count - 1].Value.transform.position - this.transform.position).magnitude > 5.0f)
                     {
-                        traversal_nodes = pfr.getRouteNodes(findClosestNode(), target_node, npc_no);
+                        this.transform.position += move_speed * Time.deltaTime
+                            * -(traversal_nodes[traversal_nodes.Count - 1].Value.transform.position - this.transform.position).normalized;
                     }
+                    else
+                    {
+                        this.transform.position += move_speed * Time.deltaTime
+                                * (traversal_nodes[traversal_nodes.Count - 1].Value.transform.position - this.transform.position).normalized;
+                    }
+                    //node removal and pathfinding is handled by ghost collisions
                 }
             }
         }

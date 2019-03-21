@@ -22,8 +22,8 @@ public class NodeBehaviour : MonoBehaviour
     public Dictionary<string, GameObject> connections = new Dictionary<string, GameObject>();
     public Dictionary<string, PastPathProperties> npc_paths_container = new Dictionary<string, PastPathProperties>();
 
-    private bool x_warp_node = false;
-    private bool z_warp_node = false;
+    public bool x_warp_node = false;
+    public bool z_warp_node = false;
 
     public void set_x_warp(bool x)
     {
@@ -59,16 +59,17 @@ public class NodeBehaviour : MonoBehaviour
     }
     void OnTriggerExit(Collider collider)
     {
-        if (collider.tag == "PlayerContainer")
-        {
-            Vector3 diff = collider.gameObject.transform.position - this.transform.position;
-            if (collider.gameObject.GetComponent<PlayerController>().powerup != null)
+       if (collider.tag == "PlayerContainer")
+       {
+            int player_no = int.Parse(collider.gameObject.name.Substring(6, 1));
+            if(player_no == MapSetup.player_no)
             {
-                diff /= 2;
-            }
-            if (x_warp_node && Mathf.Abs(diff.x) > 1.0f)
-            {
-                if (collider.tag == "PlayerContainer")
+                Vector3 diff = collider.gameObject.transform.position - this.transform.position;
+                if (collider.gameObject.GetComponent<PlayerController>().powerup != null)
+                {
+                    diff /= 2;
+                }
+                if (x_warp_node && Mathf.Abs(diff.x) > 1.0f)
                 {
                     Vector3 old_cmd = collider.gameObject.GetComponent<PlayerMovement>().current_movement_direction;
                     NodeBehaviour old_cn = collider.gameObject.GetComponent<PlayerMovement>().current_node;
@@ -93,11 +94,9 @@ public class NodeBehaviour : MonoBehaviour
                     player_clone.GetComponent<PlayerMovement>().current_movement_direction = old_cmd;
                     player_clone.GetComponent<PlayerMovement>().current_node = old_cn;
                     player_clone.GetComponent<PlayerMovement>().target_node = old_tn;
+
                 }
-            }
-            if (z_warp_node && Mathf.Abs(diff.z) > 1.0f)
-            {
-                if (collider.tag == "PlayerContainer")
+                if (z_warp_node && Mathf.Abs(diff.z) > 1.0f)
                 {
                     Vector3 old_cmd = collider.gameObject.GetComponent<PlayerMovement>().current_movement_direction;
                     NodeBehaviour old_cn = collider.gameObject.GetComponent<PlayerMovement>().current_node;
@@ -122,9 +121,40 @@ public class NodeBehaviour : MonoBehaviour
                     player_clone.GetComponent<PlayerMovement>().current_movement_direction = old_cmd;
                     player_clone.GetComponent<PlayerMovement>().current_node = old_cn;
                     player_clone.GetComponent<PlayerMovement>().target_node = old_tn;
+
                 }
+            } 
+        }
+       else if(collider.tag == "Ghost" && Connector.is_host == 1)
+        {
+            Vector3 diff = collider.gameObject.transform.position - this.transform.position;
+            if (x_warp_node && Mathf.Abs(diff.x) > 1.0f)
+            {
+                    string ghost_name = collider.gameObject.name.Substring(0, 6);
+                    GameObject ghost_clone = PhotonNetwork.Instantiate(ghost_name, new Vector3(
+                        -collider.gameObject.transform.position.x,
+                        collider.gameObject.transform.position.y,
+                        collider.gameObject.transform.position.z),
+                        Quaternion.identity);
+
+                ghost_clone.GetComponent<GhostMovement>().traversal_nodes = collider.GetComponent<GhostMovement>().traversal_nodes;
+                ghost_clone.GetComponent<GhostMovement>().npc_no = collider.GetComponent<GhostMovement>().npc_no;
+                PhotonNetwork.Destroy(collider.gameObject);
+               
+            }
+            if (z_warp_node && Mathf.Abs(diff.z) > 1.0f)
+            {
+                string ghost_name = collider.gameObject.name.Substring(0, 6);
+                Quaternion rot = collider.gameObject.transform.rotation;
+                GameObject ghost_clone = PhotonNetwork.Instantiate(ghost_name, new Vector3(
+                    collider.gameObject.transform.position.x,
+                    collider.gameObject.transform.position.y,
+                    -collider.gameObject.transform.position.z),
+                    Quaternion.identity);
+                ghost_clone.GetComponent<GhostMovement>().traversal_nodes = collider.GetComponent<GhostMovement>().traversal_nodes;
+                ghost_clone.GetComponent<GhostMovement>().npc_no = collider.GetComponent<GhostMovement>().npc_no;
+                PhotonNetwork.Destroy(collider.gameObject);
             }
         }
-       
     }
 }

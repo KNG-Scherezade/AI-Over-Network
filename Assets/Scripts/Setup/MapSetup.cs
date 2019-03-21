@@ -14,6 +14,7 @@ public class MapSetup : MonoBehaviour
     public static int all_players = 0;
     public static int[] score_points = new int[4];
     public static GameObject info_text;
+    public static GameObject info_pan;
     public static GameObject player_text;
     public static bool play_audio;
 
@@ -42,6 +43,7 @@ public class MapSetup : MonoBehaviour
         food = GameObject.FindGameObjectsWithTag("Food");
         score_text = GameObject.FindGameObjectsWithTag("Score");
         info_text = GameObject.FindGameObjectWithTag("UIText");
+        info_pan = GameObject.FindGameObjectWithTag("UIPanel");
         player_text = GameObject.FindGameObjectWithTag("HostMsg");
         List<GameObject> wps = (new List<GameObject>(GameObject.FindGameObjectsWithTag("WP")));
         wps.AddRange(new List<GameObject>(GameObject.FindGameObjectsWithTag("GhostPen")));
@@ -225,6 +227,7 @@ public class MapSetup : MonoBehaviour
                 }
             }
             info_text.SetActive(true);
+            info_pan.SetActive(true);
             info_text.GetComponent<Text>().text = "Player " + (win_index + 1) + " Wins~!" ;
         }
     }
@@ -265,6 +268,8 @@ public class MapSetup : MonoBehaviour
         }
         else
         {
+            MapSetup.info_text.SetActive(false);
+            MapSetup.info_pan.SetActive(false);
             MapSetup.start_time = Time.time;
             MapSetup.setTime();
             MapSetup.reset_food();
@@ -278,14 +283,14 @@ public class MapSetup : MonoBehaviour
 
             if (Connector.is_host == 1)
             {
-               PhotonNetwork.Instantiate(
-                    "GhostA",
-                    GameObject.Find("GhostASpawn").transform.position,
-                    Quaternion.identity);
-                PhotonNetwork.Instantiate(
-                    "GhostB",
-                    GameObject.Find("GhostBSpawn").transform.position,
-                Quaternion.identity);
+                //PhotonNetwork.Instantiate(
+                //      "GhostA",
+                //      GameObject.Find("GhostASpawn").transform.position,
+                //      Quaternion.identity);
+                  PhotonNetwork.Instantiate(
+                      "GhostB",
+                      GameObject.Find("GhostBSpawn").transform.position,
+                  Quaternion.identity);
             }
 
         }
