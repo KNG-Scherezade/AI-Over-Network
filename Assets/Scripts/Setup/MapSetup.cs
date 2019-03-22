@@ -206,8 +206,7 @@ public class MapSetup : MonoBehaviour
                     {
                         powerspawn = false;
                     }
-
-                    if (GameObject.FindGameObjectsWithTag("Food") == null)
+                        if (GameObject.FindGameObjectsWithTag("Food").Length == 0)
                     {
                         reset_food();
                     }

@@ -25,7 +25,6 @@ public class GhostCollisions : MonoBehaviour
             NodeBehaviour ghost_node = this.GetComponent<GhostMovement>().findClosestNode();
             if (ghost_node != null)
             {
-                Debug.Log("!1");
                 NodeBehaviour target_node = null;
                 //closest player null when no players to target
                 if (closest_player == null)

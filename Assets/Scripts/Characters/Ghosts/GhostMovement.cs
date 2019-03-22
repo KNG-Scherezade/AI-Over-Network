@@ -110,7 +110,6 @@ public class GhostMovement : MonoBehaviour
                 NodeBehaviour ghost_node = this.GetComponent<GhostMovement>().findClosestNode();
                 if (ghost_node != null)
                 {
-                    Debug.Log("!2");
                     NodeBehaviour target_node = null;
                     //closest player null when no players to target
                     if (closest_player == null)
@@ -130,7 +129,6 @@ public class GhostMovement : MonoBehaviour
             }
             else
             {
-                Debug.Log("A");
                 if (findClosestNode() == traversal_nodes[traversal_nodes.Count - 1].Value)
                 {
                     traversal_nodes.RemoveAt(traversal_nodes.Count - 1);

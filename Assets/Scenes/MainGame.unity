@@ -424,7 +424,7 @@ PrefabInstance:
     - target: {fileID: 6556439875261888653, guid: 2d92c92266884af42b6085cefcc22af7,
         type: 3}
       propertyPath: power_interval
-      value: 46
+      value: 10
       objectReference: {fileID: 0}
     m_RemovedComponents: []
   m_SourcePrefab: {fileID: 100100000, guid: 2d92c92266884af42b6085cefcc22af7, type: 3}

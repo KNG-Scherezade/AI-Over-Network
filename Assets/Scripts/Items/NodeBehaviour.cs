@@ -82,19 +82,8 @@ public class NodeBehaviour : MonoBehaviour
                         collider.gameObject.transform.position.y,
                         collider.gameObject.transform.position.z),
                         rot);
-                    player_clone.GetComponent<PlayerMovement>().move_speed_stored = collider.gameObject.GetComponent<PlayerMovement>().move_speed_stored;
-                    PhotonNetwork.Destroy(collider.gameObject);
-                    if (pb != null)
-                    {
-                        pb.character_using = player_clone;
-                        player_clone.GetComponent<PlayerController>().powerup = pb;
-                        player_clone.GetComponent<PlayerController>().setPowerState(true);
-                        player_clone.GetComponent<PlayerMovement>().init = true;
-                    }
-                    player_clone.GetComponent<PlayerMovement>().current_movement_direction = old_cmd;
-                    player_clone.GetComponent<PlayerMovement>().current_node = old_cn;
-                    player_clone.GetComponent<PlayerMovement>().target_node = old_tn;
-
+                    reconstruction(player_clone, pb, collider, old_cmd,
+                        old_cn, old_tn);
                 }
                 if (z_warp_node && Mathf.Abs(diff.z) > 1.0f)
                 {
@@ -109,19 +98,8 @@ public class NodeBehaviour : MonoBehaviour
                         collider.gameObject.transform.position.y,
                         -collider.gameObject.transform.position.z),
                         rot);
-                    player_clone.GetComponent<PlayerMovement>().move_speed_stored = collider.gameObject.GetComponent<PlayerMovement>().move_speed_stored;
-                    PhotonNetwork.Destroy(collider.gameObject);
-                    if (pb != null)
-                    {
-                        pb.character_using = player_clone;
-                        player_clone.GetComponent<PlayerController>().powerup = pb;
-                        player_clone.GetComponent<PlayerController>().setPowerState(true);
-                        player_clone.GetComponent<PlayerMovement>().init = true;
-                    }
-                    player_clone.GetComponent<PlayerMovement>().current_movement_direction = old_cmd;
-                    player_clone.GetComponent<PlayerMovement>().current_node = old_cn;
-                    player_clone.GetComponent<PlayerMovement>().target_node = old_tn;
-
+                    reconstruction(player_clone, pb, collider, old_cmd,
+                        old_cn, old_tn);
                 }
             } 
         }
@@ -155,6 +133,25 @@ public class NodeBehaviour : MonoBehaviour
                 ghost_clone.GetComponent<GhostMovement>().npc_no = collider.GetComponent<GhostMovement>().npc_no;
                 PhotonNetwork.Destroy(collider.gameObject);
             }
+        }
+    }
+
+    void reconstruction(GameObject player_clone, PowerupBehaviour pb, Collider collider, Vector3 old_cmd, 
+        NodeBehaviour old_cn, GameObject old_tn)
+    {
+        player_clone.GetComponent<PlayerMovement>().move_speed_stored = collider.gameObject.GetComponent<PlayerMovement>().move_speed_stored;
+        if (pb != null)
+        {
+            player_clone.GetComponent<PlayerController>().powerup = pb;
+        }
+        player_clone.GetComponent<PlayerMovement>().current_movement_direction = old_cmd;
+        player_clone.GetComponent<PlayerMovement>().current_node = old_cn;
+        player_clone.GetComponent<PlayerMovement>().target_node = old_tn;
+        PhotonNetwork.Destroy(collider.gameObject);
+        if (pb != null)
+        {
+            player_clone.GetComponent<PlayerController>().setPowerState(true);
+            player_clone.GetComponent<PlayerMovement>().init = true;
         }
     }
 }

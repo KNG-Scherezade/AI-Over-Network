@@ -83,7 +83,7 @@ public class PlayerMovement : MonoBehaviour
         }
     }
 
-    void findClosestNode()
+    public void findClosestNode()
     {
         Collider[] cols = Physics.OverlapBox(this.transform.position, new Vector3(1.0f, 1.0f, 1.0f), Quaternion.identity, 1 << 11);
         float closests = 1000;
@@ -93,6 +93,23 @@ public class PlayerMovement : MonoBehaviour
             {
                 closests = (col.transform.position - this.transform.position).magnitude;
                 current_node = col.gameObject.GetComponent<NodeBehaviour>();
+            }
+        }
+    }
+
+    void findClosestForewardNode()
+    {
+        Collider[] cols = Physics.OverlapBox(this.transform.position, new Vector3(1.0f, 1.0f, 1.0f), Quaternion.identity, 1 << 11);
+        float closests = 1000;
+        foreach (Collider col in cols)
+        {
+            if ((col.transform.position - this.transform.position).magnitude < closests)
+            {
+                Debug.Log(Vector3.Dot(col.transform.position - this.transform.position, this.transform.rotation.eulerAngles));
+                if (Vector3.Dot(col.transform.position - this.transform.position, this.transform.rotation.eulerAngles) == 1) {
+                    closests = (col.transform.position - this.transform.position).magnitude;
+                    current_node = col.gameObject.GetComponent<NodeBehaviour>();
+                }
             }
         }
     }
@@ -132,7 +149,7 @@ public class PlayerMovement : MonoBehaviour
             }
             else if ((int)direction_vect.z == -1 && current_node.connections.ContainsKey("Down"))
             {
-                if (this.tag == "Player" && current_node.connections["Down"].tag == "GhostPen")
+                if (this.tag == "PlayerContainer" && current_node.connections["Down"].tag == "GhostPen")
                     return false;
                 target_node = current_node.connections["Down"];
                 return true;

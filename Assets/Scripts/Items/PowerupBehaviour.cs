@@ -9,7 +9,7 @@ public class PowerupBehaviour : MonoBehaviour
 
     public float powerup_duration = 5.0f;
     float powerup_start = 0;
-    public GameObject character_using;
+    public int character_using;
     bool in_use = false; 
 
      void OnTriggerEnter(Collider collider)
@@ -21,14 +21,15 @@ public class PowerupBehaviour : MonoBehaviour
             {
                 ghost.GetComponent<GhostMovement>().flee_state = true;
             }
-            character_using = collider.gameObject;
-            character_using.GetComponentInParent<PlayerController>().setPowerState(true);
-            character_using.GetComponentInParent<PlayerController>().powerup = this;
+            character_using = int.Parse(collider.gameObject.name.Substring(6,1));
+            collider.GetComponentInParent<PlayerController>().setPowerState(true);
+            if(collider.GetComponentInParent<PlayerController>().powerup != null)
+                PhotonNetwork.Destroy(collider.GetComponentInParent<PlayerController>().powerup.gameObject);
+            collider.GetComponentInParent<PlayerController>().powerup = this;
             this.GetComponent<MeshRenderer>().enabled = false;
             this.GetComponent<SphereCollider>().enabled = false;
             powerup_start = Time.time;
             in_use = true;
-
         }
     }
     void Update()
@@ -40,8 +41,9 @@ public class PowerupBehaviour : MonoBehaviour
             {
                 ghost.GetComponent<GhostMovement>().flee_state = false;
             }
-            character_using.GetComponentInParent<PlayerController>().setPowerState(false);
-            character_using.GetComponentInParent<PlayerController>().powerup = null;
+            GameObject character = GameObject.Find("Player" + character_using + "(Clone)");
+            character.GetComponentInParent<PlayerController>().setPowerState(false);
+            character.GetComponentInParent<PlayerController>().powerup = null;
             PhotonNetwork.Destroy(this.gameObject);
         }
     }

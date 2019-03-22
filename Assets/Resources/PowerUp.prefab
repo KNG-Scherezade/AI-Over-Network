@@ -145,4 +145,4 @@ MonoBehaviour:
   m_Name: 
   m_EditorClassIdentifier: 
   powerup_duration: 5
-  character_using: {fileID: 0}
+  character_using: 0

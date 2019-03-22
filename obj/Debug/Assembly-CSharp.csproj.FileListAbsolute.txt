@@ -1,0 +1,2 @@
+S:\GitProjects\Scherezade\Comp476 - A3\obj\Debug\Assembly-CSharp.csprojAssemblyReference.cache
+S:\GitProjects\Scherezade\Comp476 - A3\obj\Debug\Assembly-CSharp.csproj.CoreCompileInputs.cache
