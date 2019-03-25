@@ -7,7 +7,7 @@ public class GhostCollisions : MonoBehaviour
 
     void OnTriggerEnter(Collider collider)
     {
-        if(collider.tag == "PlayerHurtbox")
+        if(collider.tag == "PlayerHurtbox" && PlayerController.checkIsClientPlayer(LayerMask.LayerToName(collider.gameObject.layer)))
         {
             if (collider.gameObject.GetComponentInParent<PlayerController>().powerup == null) { 
                 collider.gameObject.GetComponentInParent<PlayerController>().respawn();
@@ -17,7 +17,6 @@ public class GhostCollisions : MonoBehaviour
             {
                 this.GetComponent<GhostMovement>().respawn();
             }
-
         }
         if (collider.tag == "WP" || collider.tag == "GhostPen")
         {
@@ -41,16 +40,5 @@ public class GhostCollisions : MonoBehaviour
                 }
             }
         }
-    }
-
-
-    void OnTriggerExit(Collider collider)
-    {
-
-    }
-
-    void Update()
-    {
-        
     }
 }

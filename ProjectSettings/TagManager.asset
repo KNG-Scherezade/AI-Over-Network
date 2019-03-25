@@ -19,6 +19,7 @@ TagManager:
   - PlayerContainer
   - UIPannel
   - UIPanel
+  - Console
   layers:
   - Default
   - TransparentFX

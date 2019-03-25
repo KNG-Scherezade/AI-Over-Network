@@ -282,11 +282,11 @@ public class MapSetup : MonoBehaviour
 
             if (Connector.is_host == 1)
             {
-                //PhotonNetwork.Instantiate(
-                //      "GhostA",
-                //      GameObject.Find("GhostASpawn").transform.position,
-                //      Quaternion.identity);
-                  PhotonNetwork.Instantiate(
+                PhotonNetwork.Instantiate(
+                      "GhostA",
+                      GameObject.Find("GhostASpawn").transform.position,
+                      Quaternion.identity);
+                PhotonNetwork.Instantiate(
                       "GhostB",
                       GameObject.Find("GhostBSpawn").transform.position,
                   Quaternion.identity);

@@ -59,11 +59,8 @@ public class NodeBehaviour : MonoBehaviour
     }
     void OnTriggerExit(Collider collider)
     {
-       if (collider.tag == "PlayerContainer")
+       if (collider.tag == "PlayerContainer" && PlayerController.checkIsClientPlayer(collider.name))
        {
-            int player_no = int.Parse(collider.gameObject.name.Substring(6, 1));
-            if(player_no == MapSetup.player_no)
-            {
                 Vector3 diff = collider.gameObject.transform.position - this.transform.position;
                 if (collider.gameObject.GetComponent<PlayerController>().powerup != null)
                 {
@@ -100,7 +97,6 @@ public class NodeBehaviour : MonoBehaviour
                         rot);
                     reconstruction(player_clone, pb, collider, old_cmd,
                         old_cn, old_tn);
-                }
             } 
         }
        else if(collider.tag == "Ghost" && Connector.is_host == 1)

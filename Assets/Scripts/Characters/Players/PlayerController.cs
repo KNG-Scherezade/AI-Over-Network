@@ -7,6 +7,17 @@ public class PlayerController : MonoBehaviour
 
     public PowerupBehaviour powerup;
 
+    public static bool checkIsClientPlayer(string name)
+    {
+        try {
+            return int.Parse(name.Substring(6, 1)) == MapSetup.player_no;
+        }
+        catch(System.Exception e)
+        {
+            return false;
+        }
+    }
+
     // scan player character for changes
     void Update()
     {
